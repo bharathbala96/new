@@ -1,4 +1,28 @@
-This is my first line....
-Second line
-Third line
-Foruth line
+- hosts: tomcat
+  become: yes
+  remote_user: ec2-user
+  tasks:
+    - name: going to update the yum package
+      yum:
+        name: "*"
+        state: latest
+
+    - name: install java 8
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+
+    - name: Tomcat Downloading
+      get_url:
+        url: https://downloads.apache.org/tomcat/tomcat-9/v9.0.46/bin/apache-tomcat-9.0.46.tar.gz
+        dest: /usr/local
+        mode: '0777'
+
+    - name: Extracting tomcat
+      ansible.builtin.unarchive:
+        src: /usr/local/apache-tomcat-9.0.46.tar.gz
+        dest: /usr/local
+        remote_src: yes
+    
+    - name: going to start apache
+      shell: nohup /usr/local/apache-tomcat-9.0.46/bin/startup.sh &
